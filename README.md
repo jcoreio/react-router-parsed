@@ -37,8 +37,11 @@ const EditUserRoute = () => (
 ```
 
 For each property in `paramParsers`, the key is the url parameter name, and the
-value is a function that takes the raw string value for the url parameter and
-returns the parsed value.
+value is a function that takes the following arguments and returns the parsed
+value.
+* `raw` - the raw string value of the parameter
+* `param` - the key, or parameter name
+* `info` - a hash of additional info; right now, just `{match}`
 
 ### Parsing `location.search`
 

@@ -141,6 +141,35 @@ describe('Route', () => {
       </MemoryRouter>
     )
   })
+  it('calls paramParsers with correct args', () => {
+    const parseFoo = sinon.spy(foo => foo)
+    const parseBar = sinon.spy(bar => bar)
+    mount(
+      <MemoryRouter
+        initialEntries={['/3/hello,world']}
+        initialIndex={0}
+      >
+        <Route
+          path="/:foo/:bar"
+          paramParsers={{
+            foo: parseFoo,
+            bar: parseBar
+          }}
+        />
+      </MemoryRouter>
+    )
+    const match = {
+      path: '/:foo/:bar',
+      url: '/3/hello,world',
+      isExact: true,
+      params: {
+        foo: '3',
+        bar: 'hello,world',
+      },
+    }
+    expect(parseFoo.args[0]).to.deep.equal(['3', 'foo', {match}])
+    expect(parseBar.args[0]).to.deep.equal(['hello,world', 'bar', {match}])
+  })
   it('passes parsed params to render', () => {
     const render = sinon.spy(() => null)
     mount(

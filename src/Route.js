@@ -7,7 +7,7 @@ import type {Match, Location, RouterHistory} from 'react-router'
 const isEmptyChildren = children => React.Children.count(children) === 0
 
 export type ParamParsers<Params: Object> =
-  $ObjMap<Params, <Param>(Param) => (string) => Param>
+  $ObjMap<Params, <Param>(Param) => (string, $Keys<Params>, {match: Match}) => Param>
 
 export type ParamParseErrors<Params: Object> =
   $ObjMap<Params, <Param>(Param) => ?Error>
@@ -68,7 +68,7 @@ function parseParams<Params: Object>(match: Match, paramParsers: ?ParamParsers<P
   const errors = {}
   for (let param in paramParsers) {
     try {
-      params[param] = paramParsers[param](match.params[param])
+      params[param] = paramParsers[param](match.params[param], param, {match})
     } catch (error) {
       hasErrors = true
       errors[param] = error
