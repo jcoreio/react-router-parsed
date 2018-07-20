@@ -11,7 +11,7 @@ parsing and error handling in an organized fashion.
 ## Rationale
 
 After working with `react-router` 4 enough, I started to realize that I had a lot of duplicated code to parse my
-query params within render methods and event handlers for my components.  For instance:
+URL params and query string within render methods and event handlers for my components.  For instance:
 
 ```js
 class EditDeviceView extends React.Component {
