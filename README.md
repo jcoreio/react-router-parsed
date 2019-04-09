@@ -142,4 +142,4 @@ const EditUserRoute = () => (
 - `paramParseError` - a compound `Error` from parsing params, if any
 - `paramParseErrors` - an object with `Error`s thrown by the corresponding
   `paramParsers`
-- # `queryParseError` - the `Error` from `queryParser`, if any
+- `queryParseError` - the `Error` from `queryParser`, if any
