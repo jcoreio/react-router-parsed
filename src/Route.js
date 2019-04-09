@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react'
-import Route from 'react-router/Route'
+import {Route} from 'react-router'
 import type {Match, Location, RouterHistory} from 'react-router'
 
 const isEmptyChildren = children => React.Children.count(children) === 0
