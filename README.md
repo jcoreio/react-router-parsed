@@ -49,7 +49,6 @@ already-parsed values as props.
 ## Quick Start
 
 ```sh
-<<<<<<< HEAD
 npm install --save react-router react-router-parsed
 ```
 
