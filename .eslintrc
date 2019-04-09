@@ -1,9 +1,26 @@
 {
   "extends": [
-    "@jedwards1211/eslint-config-react", "@jedwards1211/eslint-config-flow"
+    "@jedwards1211/eslint-config-react",
+    "@jedwards1211/eslint-config-flow",
+    "eslint-config-prettier"
   ],
   "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
   "env": {
     "es6": true
+  },
+  "rules": {
+    "flowtype/space-after-type-colon": 0
+  },
+  "settings": {
+    "react": {
+      "pragma": "React", // Pragma to use, default to "React"
+      "version": "detect", // React version. "detect" automatically picks the version you have installed.
+      // You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
+      "flowVersion": "detect" // Flow version
+    }
   }
 }

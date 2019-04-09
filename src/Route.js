@@ -1,16 +1,20 @@
 // @flow
 
 import * as React from 'react'
-import {Route} from 'react-router'
-import type {Match, Location, RouterHistory} from 'react-router'
+import { Route } from 'react-router'
+import type { Match, Location, RouterHistory } from 'react-router'
 
 const isEmptyChildren = children => React.Children.count(children) === 0
 
-export type ParamParsers<Params: Object> =
-  $ObjMap<Params, <Param>(Param) => (string, $Keys<Params>, {match: Match}) => Param>
+export type ParamParsers<Params: Object> = $ObjMap<
+  Params,
+  <Param>(Param) => (string, $Keys<Params>, { match: Match }) => Param
+>
 
-export type ParamParseErrors<Params: Object> =
-  $ObjMap<Params, <Param>(Param) => ?Error>
+export type ParamParseErrors<Params: Object> = $ObjMap<
+  Params,
+  <Param>(Param) => ?Error
+>
 
 export type QueryParser<Query: Object> = (search: string) => Query
 
@@ -47,20 +51,28 @@ export type ErrorProps<Params: Object> = {
 
 type BaseProps = React.ElementProps<typeof Route>
 
-export type Props<Params: Object, Query: Object> = $Diff<BaseProps, {
-  component: any,
-  render: any,
-  children: any,
-}> & {
+export type Props<Params: Object, Query: Object> = $Diff<
+  BaseProps,
+  {
+    component: any,
+    render: any,
+    children: any,
+  }
+> & {
   paramParsers?: ?ParamParsers<Params>,
   queryParser?: ?QueryParser<Query>,
   component?: ?React.ComponentType<*>,
   render?: ?(props: RenderProps<Params, Query>) => ?React.Node,
-  children?: React.ComponentType<ChildrenProps<Params, Query>> | React.Element<*>,
+  children?:
+    | React.ComponentType<ChildrenProps<Params, Query>>
+    | React.Element<*>,
   renderErrors?: ?(props: ErrorProps<Params>) => ?React.Node,
 }
 
-function parseParams<Params: Object>(match: Match, paramParsers: ?ParamParsers<Params>): Params {
+function parseParams<Params: Object>(
+  match: Match,
+  paramParsers: ?ParamParsers<Params>
+): Params {
   const params = {}
   if (!paramParsers) return (params: any)
 
@@ -68,27 +80,33 @@ function parseParams<Params: Object>(match: Match, paramParsers: ?ParamParsers<P
   const errors = {}
   for (let param in paramParsers) {
     try {
-      params[param] = paramParsers[param](match.params[param], param, {match})
+      params[param] = paramParsers[param](match.params[param], param, { match })
     } catch (error) {
       hasErrors = true
       errors[param] = error
     }
   }
   if (hasErrors) {
-    const error = new Error('Some params failed to parse');
-    (error: any).params = errors
+    const error = new Error('Some params failed to parse')
+    ;(error: any).params = errors
     throw error
   }
   return (params: any)
 }
 
 export default function ParsedRoute<Params: Object, Query: Object>({
-  component, render, children, paramParsers, queryParser, renderErrors, ...props
+  component,
+  render,
+  children,
+  paramParsers,
+  queryParser,
+  renderErrors,
+  ...props
 }: Props<Params, Query>): React.Node {
   return (
     <Route {...props}>
       {(props: BaseRenderProps) => {
-        const {match, location} = props
+        const { match, location } = props
         let paramParseError
         let paramParseErrors
         let queryParseError
@@ -106,26 +124,28 @@ export default function ParsedRoute<Params: Object, Query: Object>({
         }
 
         if (paramParseError || queryParseError) {
-          if (renderErrors) return renderErrors({
-            ...props,
-            paramParseError,
-            paramParseErrors,
-            queryParseError,
-          })
+          if (renderErrors)
+            return renderErrors({
+              ...props,
+              paramParseError,
+              paramParseErrors,
+              queryParseError,
+            })
           return null
         }
 
         const finalProps = {
           ...props,
           params,
-          query
+          query,
         }
 
-        if (component) return match ? React.createElement(component, finalProps) : null
+        if (component)
+          return match ? React.createElement(component, finalProps) : null
 
         if (render) return match ? render(finalProps) : null
 
-        if (typeof children === "function") return children(finalProps)
+        if (typeof children === 'function') return children(finalProps)
 
         if (children && !isEmptyChildren(children))
           return React.Children.only(children)

@@ -1,10 +1,10 @@
 // @flow
 
 import * as React from 'react'
-import {MemoryRouter} from 'react-router'
-import {describe, it} from 'mocha'
-import {mount} from 'enzyme'
-import {expect} from 'chai'
+import { MemoryRouter } from 'react-router'
+import { describe, it } from 'mocha'
+import { mount } from 'enzyme'
+import { expect } from 'chai'
 import sinon from 'sinon'
 import qs from 'qs'
 
@@ -13,15 +13,12 @@ import Route from '../src/Route'
 describe('Route', () => {
   it("doesn't error when component, render, and children are missing", () => {
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
         />
       </MemoryRouter>
@@ -30,15 +27,14 @@ describe('Route', () => {
   it("doesn't error when renderErrors is missing", () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
-            foo: () => { throw new Error() },
-            bar: (text) => text.split(/,/g),
+            foo: () => {
+              throw new Error()
+            },
+            bar: text => text.split(/,/g),
           }}
           render={render}
         />
@@ -49,15 +45,12 @@ describe('Route', () => {
   it("doesn't call render when it doesn't match", () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
           render={render}
         />
@@ -68,15 +61,12 @@ describe('Route', () => {
   it("doesn't render component when it doesn't match", () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
           component={render}
         />
@@ -87,15 +77,12 @@ describe('Route', () => {
   it("calls children with null match when it doesn't match", () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
         >
           {render}
@@ -106,38 +93,29 @@ describe('Route', () => {
   })
   it("doesn't error when children is not a function", () => {
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
         >
-          <div>
-            test
-          </div>
+          <div>test</div>
         </Route>
       </MemoryRouter>
     )
   })
   it("doesn't error when children is empty", () => {
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
-        >
-        </Route>
+        />
       </MemoryRouter>
     )
   })
@@ -145,15 +123,12 @@ describe('Route', () => {
     const parseFoo = sinon.spy(foo => foo)
     const parseBar = sinon.spy(bar => bar)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFoo,
-            bar: parseBar
+            bar: parseBar,
           }}
         />
       </MemoryRouter>
@@ -167,21 +142,18 @@ describe('Route', () => {
         bar: 'hello,world',
       },
     }
-    expect(parseFoo.args[0]).to.deep.equal(['3', 'foo', {match}])
-    expect(parseBar.args[0]).to.deep.equal(['hello,world', 'bar', {match}])
+    expect(parseFoo.args[0]).to.deep.equal(['3', 'foo', { match }])
+    expect(parseBar.args[0]).to.deep.equal(['hello,world', 'bar', { match }])
   })
   it('passes parsed params to render', () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
           render={render}
         />
@@ -195,15 +167,12 @@ describe('Route', () => {
   it('passes parsed params to component', () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
           component={render}
         />
@@ -217,15 +186,12 @@ describe('Route', () => {
   it('passes parsed params to children', () => {
     const render = sinon.spy(() => null)
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: (text) => text.split(/,/g),
+            bar: text => text.split(/,/g),
           }}
         >
           {render}
@@ -241,15 +207,14 @@ describe('Route', () => {
     const render = sinon.spy(() => null)
     const error = new Error('Test!')
     mount(
-      <MemoryRouter
-        initialEntries={['/3/hello,world']}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
           path="/:foo/:bar"
           paramParsers={{
-            foo: () => { throw error },
-            bar: (text) => text.split(/,/g),
+            foo: () => {
+              throw error
+            },
+            bar: text => text.split(/,/g),
           }}
           renderErrors={render}
         />
@@ -264,7 +229,7 @@ describe('Route', () => {
     const render = sinon.spy(() => null)
     mount(
       <MemoryRouter
-        initialEntries={[{pathname: '/foo', search: '?foo=bar'}]}
+        initialEntries={[{ pathname: '/foo', search: '?foo=bar' }]}
         initialIndex={0}
       >
         <Route
@@ -274,13 +239,13 @@ describe('Route', () => {
         />
       </MemoryRouter>
     )
-    expect(render.args[0][0].query).to.deep.equal({foo: 'bar'})
+    expect(render.args[0][0].query).to.deep.equal({ foo: 'bar' })
   })
   it('passes parsed query to component', () => {
     const render = sinon.spy(() => null)
     mount(
       <MemoryRouter
-        initialEntries={[{pathname: '/foo', search: '?foo=bar'}]}
+        initialEntries={[{ pathname: '/foo', search: '?foo=bar' }]}
         initialIndex={0}
       >
         <Route
@@ -290,13 +255,13 @@ describe('Route', () => {
         />
       </MemoryRouter>
     )
-    expect(render.args[0][0].query).to.deep.equal({foo: 'bar'})
+    expect(render.args[0][0].query).to.deep.equal({ foo: 'bar' })
   })
   it('passes parsed query to children', () => {
     const render = sinon.spy(() => null)
     mount(
       <MemoryRouter
-        initialEntries={[{pathname: '/foo', search: '?foo=bar'}]}
+        initialEntries={[{ pathname: '/foo', search: '?foo=bar' }]}
         initialIndex={0}
       >
         <Route
@@ -307,19 +272,21 @@ describe('Route', () => {
         </Route>
       </MemoryRouter>
     )
-    expect(render.args[0][0].query).to.deep.equal({foo: 'bar'})
+    expect(render.args[0][0].query).to.deep.equal({ foo: 'bar' })
   })
   it('calls renderErrors with query parse error', () => {
     const render = sinon.spy(() => null)
     const error = new Error('test')
     mount(
       <MemoryRouter
-        initialEntries={[{pathname: '/foo', search: '?foo=bar'}]}
+        initialEntries={[{ pathname: '/foo', search: '?foo=bar' }]}
         initialIndex={0}
       >
         <Route
           path="/foo"
-          queryParser={() => { throw error }}
+          queryParser={() => {
+            throw error
+          }}
           renderErrors={render}
         />
       </MemoryRouter>
