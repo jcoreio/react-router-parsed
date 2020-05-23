@@ -105,7 +105,7 @@ export default function ParsedRoute<Params: Object, Query: Object>({
 }: Props<Params, Query>): React.Node {
   return (
     <Route {...props}>
-      {(props: BaseRenderProps) => {
+      {(props: BaseRenderProps): React.Node | null => {
         const { match, location } = props
         let paramParseError
         let paramParseErrors

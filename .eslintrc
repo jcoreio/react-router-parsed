@@ -12,9 +12,6 @@
   "env": {
     "es6": true
   },
-  "rules": {
-    "flowtype/space-after-type-colon": 0
-  },
   "settings": {
     "react": {
       "pragma": "React", // Pragma to use, default to "React"
