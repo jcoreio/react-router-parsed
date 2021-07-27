@@ -2,56 +2,60 @@
 
 import * as React from 'react'
 import { Route } from 'react-router'
-import type { Match, Location, RouterHistory } from 'react-router'
+import type {
+  Match,
+  ContextRouter,
+  RouterHistory,
+  Location,
+} from 'react-router'
 
-const isEmptyChildren = children => React.Children.count(children) === 0
+const isEmptyChildren = (children: any) => React.Children.count(children) === 0
 
-export type ParamParsers<Params: {}> = $ObjMap<
+export type ParamParsers<Params: { ... }> = $ObjMap<
   Params,
   <Param>(Param) => (string, $Keys<Params>, { match: Match }) => Param
 >
 
-export type ParamParseErrors<Params: {}> = $ObjMap<
+export type ParamParseErrors<Params: { ... }> = $ObjMap<
   Params,
   <Param>(Param) => ?Error
 >
 
-export type QueryParser<Query: {}> = (search: string) => Query
+export type QueryParser<Query: { ... }> = (search: string) => Query
 
-type BaseRenderProps = {
-  match: Match,
-  location: Location,
-  history: RouterHistory,
-}
+declare type StaticRouterContext = { url?: string, ... }
 
-export type RenderProps<Params: {}, Query: {}> = {
-  match: Match,
-  location: Location,
+export type RenderProps<Params: { ... }, Query: { ... }> = {|
   history: RouterHistory,
+  location: Location,
+  match: Match,
+  staticContext?: StaticRouterContext,
   params: Params,
   query: Query,
-}
+|}
 
-export type ChildrenProps<Params: {}, Query: {}> = {
-  match: ?Match,
-  location: Location,
+export type ChildrenProps<Params: { ... }, Query: { ... }> = {|
   history: RouterHistory,
+  location: Location,
+  match: Match | null,
+  staticContext?: StaticRouterContext,
   params: Params,
   query: Query,
-}
+|}
 
-export type ErrorProps<Params: {}> = {
-  match: ?Match,
-  location: Location,
+export type ErrorProps<Params: { ... }> = {|
   history: RouterHistory,
+  location: Location,
+  match: Match | null,
+  staticContext?: StaticRouterContext,
   paramParseError: ?Error,
   paramParseErrors: ?ParamParseErrors<Params>,
   queryParseError: ?Error,
-}
+|}
 
 type BaseProps = React.ElementProps<typeof Route>
 
-export type Props<Params: {}, Query: {}> = {|
+export type Props<Params: { ... }, Query: { ... }> = {|
   ...$Diff<
     BaseProps,
     {
@@ -60,17 +64,15 @@ export type Props<Params: {}, Query: {}> = {|
       children: any,
     }
   >,
-  paramParsers?: ?ParamParsers<Params>,
-  queryParser?: ?QueryParser<Query>,
-  component?: ?React.ComponentType<*>,
-  render?: ?(props: RenderProps<Params, Query>) => ?React.Node,
-  children?:
-    | React.ComponentType<ChildrenProps<Params, Query>>
-    | React.Element<*>,
-  renderErrors?: ?(props: ErrorProps<Params>) => ?React.Node,
+  paramParsers?: ParamParsers<Params>,
+  queryParser?: QueryParser<Query>,
+  component?: React.ComponentType<*>,
+  render?: (props: RenderProps<Params, Query>) => ?React.Node,
+  children?: React.ComponentType<ChildrenProps<Params, Query>> | ?React$Node,
+  renderErrors?: (props: ErrorProps<Params>) => ?React.Node,
 |}
 
-function parseParams<Params: {}>(
+export function parseParams<Params: {}>(
   match: Match,
   paramParsers: ?ParamParsers<Params>
 ): Params {
@@ -98,7 +100,7 @@ function parseParams<Params: {}>(
 const convertUndefined = <T>(value: ?T): T | null =>
   value === undefined ? null : value
 
-export default function ParsedRoute<Params: {}, Query: {}>({
+export default function ParsedRoute<Params: { ... }, Query: { ... }>({
   component,
   render,
   children,
@@ -109,20 +111,21 @@ export default function ParsedRoute<Params: {}, Query: {}>({
 }: Props<Params, Query>): React.Node {
   return (
     <Route {...props}>
-      {(props: BaseRenderProps): React.Node | null => {
+      {(props: ContextRouter): React.Node | null => {
         const { match, location } = props
         let paramParseError
         let paramParseErrors
         let queryParseError
-        let params, query
+        let params: Params = ({}: any),
+          query: Query = ({}: any)
         try {
-          params = match ? parseParams(match, paramParsers) : ({}: any)
+          if (match) params = parseParams(match, paramParsers)
         } catch (error) {
           paramParseError = error
           paramParseErrors = error.params
         }
         try {
-          query = queryParser ? queryParser(location.search) : ({}: any)
+          if (queryParser) query = queryParser(location.search)
         } catch (error) {
           queryParseError = error
         }
@@ -139,9 +142,6 @@ export default function ParsedRoute<Params: {}, Query: {}>({
             )
           return null
         }
-
-        if (!params) throw new Error('unexpected error: params is undefined')
-        if (!query) throw new Error('unexpected error: query is undefined')
 
         const finalProps = {
           ...props,

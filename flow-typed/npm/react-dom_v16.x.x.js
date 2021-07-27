@@ -1,5 +1,5 @@
-// flow-typed signature: a333d1cdbb5a4103d0be63a412070e22
-// flow-typed version: b2693c1879/react-dom_v16.x.x/flow_>=v0.117.x
+// flow-typed signature: a39f42f172876eba767e8d47cd282535
+// flow-typed version: ad3adf2de8/react-dom_v16.x.x/flow_>=v0.117.x
 
 declare module 'react-dom' {
   declare function findDOMNode(
@@ -54,12 +54,14 @@ declare module 'react-dom/server' {
   declare var version: string
 }
 
-type Thenable = { then(resolve: () => mixed, reject?: () => mixed): mixed, ... }
+declare interface Thenable {
+  then(resolve: () => mixed, reject?: () => mixed): mixed;
+}
 
 declare module 'react-dom/test-utils' {
   declare var Simulate: {
     [eventName: string]: (element: Element, eventData?: Object) => void,
-    ...,
+    ...
   }
   declare function renderIntoDocument(
     instance: React$Element<any>

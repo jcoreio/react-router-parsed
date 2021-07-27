@@ -97,7 +97,7 @@ import Route from 'react-router-parsed/Route'
 const EditUserRoute = () => (
   <Route
     path="/"
-    queryParser={search => qs.parse(search.substring(1))}
+    queryParser={(search) => qs.parse(search.substring(1))}
     render={({ query: { showMenu }, ...props }) => (
       <App {...props} showMenu={showMenu} />
     )}
@@ -117,7 +117,7 @@ const EditUserRoute = () => (
   <Route
     path="/users/:userId"
     paramParsers={{
-      userId: userId => {
+      userId: (userId) => {
         const result = parseInt(userId)
         if (!userId || !userId.trim() || !Number.isFinite(result)) {
           throw new Error(`invalid userId: ${userId}`)

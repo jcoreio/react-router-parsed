@@ -1,3 +1,6 @@
+import chai from 'chai'
+import chaiSubset from 'chai-subset'
+chai.use(chaiSubset)
 import { before } from 'mocha'
 import { configure } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'

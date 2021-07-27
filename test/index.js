@@ -7,8 +7,25 @@ import { mount } from 'enzyme'
 import { expect } from 'chai'
 import sinon from 'sinon'
 import qs from 'qs'
-
 import Route from '../src/Route'
+import useRouteMatch, {
+  type MatchPathOptions,
+  type UseRouteMatchResult,
+} from '../src/useRouteMatch'
+
+type UseRouteMatchProps<Params: { ... }, Query: { ... }> = {|
+  ...MatchPathOptions<Params, Query>,
+  render?: (props: UseRouteMatchResult<Params, Query>) => any,
+|}
+
+function UseRouteMatch<Params: { ... }, Query: { ... }>({
+  render,
+  ...props
+}: UseRouteMatchProps<Params, Query>): null {
+  const result = useRouteMatch(props)
+  render?.(result)
+  return null
+}
 
 describe('Route', () => {
   it("doesn't error when component, render, and children are missing", () => {
@@ -18,7 +35,7 @@ describe('Route', () => {
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
         />
       </MemoryRouter>
@@ -34,7 +51,7 @@ describe('Route', () => {
             foo: () => {
               throw new Error()
             },
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
           render={render}
         />
@@ -50,7 +67,7 @@ describe('Route', () => {
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
           render={render}
         />
@@ -66,7 +83,7 @@ describe('Route', () => {
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
           component={render}
         />
@@ -82,7 +99,7 @@ describe('Route', () => {
           path="/hello/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
         >
           {render}
@@ -98,7 +115,7 @@ describe('Route', () => {
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
         >
           <div>test</div>
@@ -113,15 +130,15 @@ describe('Route', () => {
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
         />
       </MemoryRouter>
     )
   })
   it('calls paramParsers with correct args', () => {
-    const parseFoo = sinon.spy(foo => foo)
-    const parseBar = sinon.spy(bar => bar)
+    const parseFoo = sinon.spy((foo) => foo)
+    const parseBar = sinon.spy((bar) => bar)
     mount(
       <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
         <Route
@@ -153,7 +170,7 @@ describe('Route', () => {
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
           render={render}
         />
@@ -172,7 +189,7 @@ describe('Route', () => {
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
           component={render}
         />
@@ -191,7 +208,7 @@ describe('Route', () => {
           path="/:foo/:bar"
           paramParsers={{
             foo: parseFloat,
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
         >
           {render}
@@ -214,7 +231,7 @@ describe('Route', () => {
             foo: () => {
               throw error
             },
-            bar: text => text.split(/,/g),
+            bar: (text) => text.split(/,/g),
           }}
           renderErrors={render}
         />
@@ -234,7 +251,7 @@ describe('Route', () => {
       >
         <Route
           path="/foo"
-          queryParser={search => qs.parse(search.substring(1))}
+          queryParser={(search) => qs.parse(search.substring(1))}
           render={render}
         />
       </MemoryRouter>
@@ -250,7 +267,7 @@ describe('Route', () => {
       >
         <Route
           path="/foo"
-          queryParser={search => qs.parse(search.substring(1))}
+          queryParser={(search) => qs.parse(search.substring(1))}
           component={render}
         />
       </MemoryRouter>
@@ -266,7 +283,7 @@ describe('Route', () => {
       >
         <Route
           path="/foo"
-          queryParser={search => qs.parse(search.substring(1))}
+          queryParser={(search) => qs.parse(search.substring(1))}
         >
           {render}
         </Route>
@@ -288,6 +305,131 @@ describe('Route', () => {
             throw error
           }}
           renderErrors={render}
+        />
+      </MemoryRouter>
+    )
+    expect(render.args[0][0].queryParseError).to.equal(error)
+  })
+})
+describe('UseRouteMatch', () => {
+  it("passes match: null when path doesn't match", () => {
+    const render = sinon.spy(() => null)
+    mount(
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
+        <UseRouteMatch
+          path="/hello/:foo/:bar"
+          paramParsers={{
+            foo: parseFloat,
+            bar: (text) => text.split(/,/g),
+          }}
+          render={render}
+        />
+      </MemoryRouter>
+    )
+    expect(render.args[0][0]).to.containSubset({
+      match: null,
+      params: {},
+      query: {},
+    })
+  })
+  it('calls paramParsers with correct args', () => {
+    const parseFoo = sinon.spy((foo) => foo)
+    const parseBar = sinon.spy((bar) => bar)
+    mount(
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
+        <UseRouteMatch
+          path="/:foo/:bar"
+          paramParsers={{
+            foo: parseFoo,
+            bar: parseBar,
+          }}
+        />
+      </MemoryRouter>
+    )
+    const match = {
+      path: '/:foo/:bar',
+      url: '/3/hello,world',
+      isExact: true,
+      params: {
+        foo: '3',
+        bar: 'hello,world',
+      },
+    }
+    expect(parseFoo.args[0]).to.deep.equal(['3', 'foo', { match }])
+    expect(parseBar.args[0]).to.deep.equal(['hello,world', 'bar', { match }])
+  })
+  it('returns parsed params', () => {
+    const render = sinon.spy(() => null)
+    mount(
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
+        <UseRouteMatch
+          path="/:foo/:bar"
+          paramParsers={{
+            foo: parseFloat,
+            bar: (text) => text.split(/,/g),
+          }}
+          render={render}
+        />
+      </MemoryRouter>
+    )
+    expect(render.args[0][0].params).to.deep.equal({
+      foo: 3,
+      bar: ['hello', 'world'],
+    })
+  })
+  it('returns errors', () => {
+    const render = sinon.spy(() => null)
+    const error = new Error('Test!')
+    mount(
+      <MemoryRouter initialEntries={['/3/hello,world']} initialIndex={0}>
+        <UseRouteMatch
+          path="/:foo/:bar"
+          paramParsers={{
+            foo: () => {
+              throw error
+            },
+            bar: (text) => text.split(/,/g),
+          }}
+          render={render}
+        />
+      </MemoryRouter>
+    )
+    expect(render.args[0][0].error).to.exist
+    expect(render.args[0][0].paramParseError).to.exist
+    expect(render.args[0][0].paramParseErrors).to.deep.equal({
+      foo: error,
+    })
+  })
+  it('returns parsed query', () => {
+    const render = sinon.spy(() => null)
+    mount(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/foo', search: '?foo=bar' }]}
+        initialIndex={0}
+      >
+        <UseRouteMatch
+          path="/foo"
+          queryParser={(search) => qs.parse(search.substring(1))}
+          render={render}
+        />
+      </MemoryRouter>
+    )
+    expect(render.args[0][0].query).to.deep.equal({ foo: 'bar' })
+  })
+  it('returns query parse error', () => {
+    const render = sinon.spy(() => null)
+    const error = new Error('test')
+    mount(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/foo', search: '?foo=bar' }]}
+        initialIndex={0}
+      >
+        <UseRouteMatch
+          path="/foo"
+          queryParser={() => {
+            throw error
+          }}
+          render={render}
         />
       </MemoryRouter>
     )
