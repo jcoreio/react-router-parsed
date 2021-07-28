@@ -1,10 +1,10 @@
 # react-router-parsed
 
 [![CircleCI](https://circleci.com/gh/jcoreio/react-router-parsed.svg?style=svg)](https://circleci.com/gh/jcoreio/react-router-parsed)
-[![Coverage Status](https://codecov.io/gh/jedwards1211/react-library-skeleton/branch/master/graph/badge.svg)](https://codecov.io/gh/jedwards1211/react-library-skeleton)
+[![Coverage Status](https://codecov.io/gh/jcoreio/react-router-parsed/branch/master/graph/badge.svg)](https://codecov.io/gh/jcoreio/react-router-parsed)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![npm version](https://badge.fury.io/js/react-library-skeleton.svg)](https://badge.fury.io/js/react-library-skeleton)
+[![npm version](https://badge.fury.io/js/react-router-parsed.svg)](https://badge.fury.io/js/react-router-parsed)
 
 This package provides a <Route> wrapper to handle url parameter and querystring
 parsing and error handling in an organized fashion.
@@ -54,6 +54,7 @@ npm install --save react-router react-router-parsed
 
 ```js
 import Route from 'react-router-parsed/Route'
+import useRouteMatch from 'react-router-parsed/useRouteMatch'
 ```
 
 ### Parsing URL parameters
@@ -74,6 +75,25 @@ const EditUserRoute = () => (
     )}
   />
 )
+```
+
+```js
+import useRouteMatch from 'react-router-parsed/useRouteMatch'
+
+const EditUserRoute = () => {
+  const {
+    match,
+    params: { userId },
+    error,
+  } = useRouteMatch({
+    path: '/users/:userId',
+    paramParsers: { userId: parseInt },
+  })
+
+  if (!match) return null
+  if (error) return <ErrorAlert>{error.message}</ErrorAlert>
+  return <EditUserView match={match} userId={userId} />
+}
 ```
 
 For each property in `paramParsers`, the key is the url parameter name, and the
@@ -143,3 +163,37 @@ const EditUserRoute = () => (
 - `paramParseErrors` - an object with `Error`s thrown by the corresponding
   `paramParsers`
 - `queryParseError` - the `Error` from `queryParser`, if any
+- `error` - `paramParseError || queryParseError`
+
+With the `useRouteMatch` hook, `error` `paramParseError`, `paramParseErrors`, `queryParseError`
+are props of the returned object:
+
+```js
+const EditUserRoute = (): React.Node | null => {
+  const {
+    match,
+    params: { userId },
+    paramParseErrors,
+  } = useRouteMatch({
+    path: '/users/:userId',
+    paramParsers: {
+      userId: (userId) => {
+        const result = parseInt(userId)
+        if (!userId || !userId.trim() || !Number.isFinite(result)) {
+          throw new Error(`invalid userId: ${userId}`)
+        }
+        return result
+      },
+    },
+  })
+  if (paramParseErrors) {
+    return (
+      <div className="alert alert-danger">
+        Invalid URL: {paramParseErrors.userId}
+      </div>
+    )
+  }
+  if (!match) return null
+  return <EditUserView match={match} userId={userId} />
+}
+```

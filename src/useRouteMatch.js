@@ -35,22 +35,37 @@ export default function parsedUseRouteMatch<Params: { ... }, Query: { ... }>({
 }: MatchPathOptions<Params, Query>): UseRouteMatchResult<Params, Query> {
   const match = useRouteMatch(matchPathOptions)
   const location = useLocation()
-  let paramParseError
-  let paramParseErrors
-  let queryParseError
-  let params: Params = ({}: any),
-    query: Query = ({}: any)
-  try {
-    if (match) params = parseParams(match, paramParsers)
-  } catch (error) {
-    paramParseError = error
-    paramParseErrors = error.params
-  }
-  try {
-    if (queryParser) query = queryParser(location.search)
-  } catch (error) {
-    queryParseError = error
-  }
+
+  const { params, paramParseError, paramParseErrors } = React.useMemo((): {|
+    params: Params,
+    paramParseError?: Error,
+    paramParseErrors?: ParamParseErrors<Params>,
+  |} => {
+    let params: Params = ({}: any)
+    let paramParseError
+    let paramParseErrors
+    try {
+      if (match) params = parseParams(match, paramParsers)
+    } catch (error) {
+      paramParseError = error
+      paramParseErrors = error.params
+    }
+    return { params, paramParseError, paramParseErrors }
+  }, [match, paramParsers])
+
+  const { query, queryParseError } = React.useMemo((): {|
+    query: Query,
+    queryParseError?: Error,
+  |} => {
+    let query: Query = ({}: any)
+    let queryParseError
+    try {
+      if (queryParser) query = queryParser(location.search)
+    } catch (error) {
+      queryParseError = error
+    }
+    return { query, queryParseError }
+  }, [queryParser, location.search])
 
   if (paramParseError || queryParseError) {
     return {
