@@ -6,6 +6,7 @@ import { describe, it } from 'mocha'
 import { mount } from 'enzyme'
 import { expect } from 'chai'
 import sinon from 'sinon'
+// $FlowFixMe
 import qs from 'qs'
 import Route from '../src/Route'
 import useRouteMatch, {
