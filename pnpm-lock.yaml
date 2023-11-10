@@ -52,6 +52,9 @@ devDependencies:
   '@jcoreio/toolchain-typescript':
     specifier: ^3.2.0
     version: 3.2.0(@babel/core@7.23.3)(@jcoreio/toolchain-esnext@3.2.0)(@jcoreio/toolchain@3.2.0)(eslint@8.53.0)(typescript@5.2.2)
+  '@types/qs':
+    specifier: ^6.9.10
+    version: 6.9.10
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.60.0
     version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.53.0)(typescript@5.2.2)
@@ -100,6 +103,9 @@ devDependencies:
   mocha:
     specifier: ^10.2.0
     version: 10.2.0
+  qs:
+    specifier: ^6.11.2
+    version: 6.11.2
   react:
     specifier: ^16.6.3
     version: 16.14.0
@@ -2278,6 +2284,10 @@ packages:
   /@types/prop-types@15.7.10:
     resolution: {integrity: sha512-mxSnDQxPqsZxmeShFH+uwQ4kO4gcJcGahjjMFeLbKE95IAZiiZyiEepGZjtXJ7hN/yfu0bu9xN2ajcU0JcxX6A==}
     dev: false
+
+  /@types/qs@6.9.10:
+    resolution: {integrity: sha512-3Gnx08Ns1sEoCrWssEgTSJs/rsT2vhGP+Ja9cnnk9k4ALxinORlQneLXFeFKOTJMOeZUFD1s7w+w2AphTpvzZw==}
+    dev: true
 
   /@types/react-router@5.1.20:
     resolution: {integrity: sha512-jGjmu/ZqS7FjSH6owMcD5qpq19+1RS9DeVRqfl1FeBMxTDQAGwlMWOcs52NDoXaNKyG3d1cYQFMs9rCrb88o9Q==}
@@ -6705,6 +6715,13 @@ packages:
   /q@1.5.1:
     resolution: {integrity: sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==}
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
+    dev: true
+
+  /qs@6.11.2:
+    resolution: {integrity: sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==}
+    engines: {node: '>=0.6'}
+    dependencies:
+      side-channel: 1.0.4
     dev: true
 
   /querystringify@2.2.0:
